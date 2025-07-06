@@ -107,6 +107,8 @@ namespace Ledgerscope.RateLimiters
             {
                 LogPermitReturned();
                 innerLease.Dispose();
+
+                _cleanupTimer.Change(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
             });
 
             _delayedReturns.Enqueue(delayTask);
@@ -135,6 +137,15 @@ namespace Ledgerscope.RateLimiters
             foreach (var task in tasksToKeep)
             {
                 _delayedReturns.Enqueue(task);
+            }
+
+            if (_delayedReturns.IsEmpty)
+            {
+                _cleanupTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+            else
+            {
+                _cleanupTimer.Change(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
             }
 
             LogCleanupCompleted(completedTasks, totalTasks);
