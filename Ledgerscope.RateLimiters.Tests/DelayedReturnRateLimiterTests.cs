@@ -1,5 +1,6 @@
 ﻿using System.Threading.RateLimiting;
 using Ledgerscope.RateLimiters;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Ledgerscope.RateLimiters.Tests
 {
@@ -33,7 +34,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public void Constructor_ValidParameters_CreatesInstance()
         {
             // Arrange & Act
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Assert
             Assert.IsNotNull(_rateLimiter);
@@ -45,7 +46,7 @@ namespace Ledgerscope.RateLimiters.Tests
         {
             // Arrange
             const int permitLimit = 3;
-            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act
             var statistics = _rateLimiter.GetStatistics();
@@ -61,7 +62,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public void AttemptAcquire_InvalidPermitCount_ThrowsArgumentOutOfRangeException(int permitCount)
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act & Assert
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => _rateLimiter.AttemptAcquire(permitCount));
@@ -71,7 +72,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public void AttemptAcquire_ValidPermitCount_ReturnsSuccessfulLease()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act
             using var lease = _rateLimiter.AttemptAcquire(1);
@@ -85,7 +86,7 @@ namespace Ledgerscope.RateLimiters.Tests
         {
             // Arrange
             const int permitLimit = 2;
-            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act
             using var lease1 = _rateLimiter.AttemptAcquire(1);
@@ -102,7 +103,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public async Task AcquireAsync_ValidPermitCount_ReturnsSuccessfulLease()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act
             using var lease = await _rateLimiter.AcquireAsync(1);
@@ -118,7 +119,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public async Task AcquireAsync_InvalidPermitCount_ThrowsArgumentOutOfRangeException(int permitCount)
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(() => _rateLimiter.AcquireAsync(permitCount).AsTask());
@@ -128,7 +129,8 @@ namespace Ledgerscope.RateLimiters.Tests
         public async Task AcquireAsync_WithCancellation_ThrowsOperationCanceledException()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(1, 5, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(1, 5, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
+
             using var lease = _rateLimiter.AttemptAcquire(1); // Consume the only permit
             using var cts = new CancellationTokenSource();
 
@@ -146,7 +148,7 @@ namespace Ledgerscope.RateLimiters.Tests
             // Arrange
             const int permitLimit = 1;
             var returnDelay = TimeSpan.FromMilliseconds(200);
-            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, returnDelay);
+            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, returnDelay, NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act - Acquire and immediately dispose to trigger delayed return
             using (var lease = _rateLimiter.AttemptAcquire(1))
@@ -171,7 +173,7 @@ namespace Ledgerscope.RateLimiters.Tests
         {
             // Arrange
             const int permitLimit = 3;
-            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act & Assert - Initial state
             var initialStats = _rateLimiter.GetStatistics();
@@ -187,7 +189,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public void Lease_MetadataOperations_BehavesCorrectly()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act
             using var lease = _rateLimiter.AttemptAcquire(1);
@@ -202,7 +204,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public void FailedLease_MetadataOperations_BehavesCorrectly()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(1, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(1, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
             using var successfulLease = _rateLimiter.AttemptAcquire(1);
 
             // Act - Try to acquire when no permits available
@@ -219,7 +221,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public void Dispose_AfterDispose_AcquireReturnsFailedLease()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act
             _rateLimiter.Dispose();
@@ -233,7 +235,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public async Task Dispose_AfterDispose_AcquireAsyncReturnsFailedLease()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act
             _rateLimiter.Dispose();
@@ -249,7 +251,7 @@ namespace Ledgerscope.RateLimiters.Tests
             // Arrange
             const int permitLimit = 2;
             const int threadCount = 5;
-            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(50));
+            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(50), NullLogger<DelayedReturnRateLimiter>.Instance);
             var successCount = 0;
             var tasks = new Task[threadCount];
 
@@ -276,7 +278,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public void Lease_Dispose_IsAcquiredBecomesFalse()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
             var lease = _rateLimiter.AttemptAcquire(1);
 
             // Act
@@ -293,7 +295,7 @@ namespace Ledgerscope.RateLimiters.Tests
             // Arrange
             const int permitLimit = 5;
             const int permitsToAcquire = 3;
-            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(100));
+            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act
             using var lease = _rateLimiter.AttemptAcquire(permitsToAcquire);
@@ -308,7 +310,7 @@ namespace Ledgerscope.RateLimiters.Tests
         public async Task CleanupTimer_DoesNotCrashApplication()
         {
             // Arrange
-            _rateLimiter = new DelayedReturnRateLimiter(1, 0, TimeSpan.FromMilliseconds(50));
+            _rateLimiter = new DelayedReturnRateLimiter(1, 0, TimeSpan.FromMilliseconds(50), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act - Create several leases to populate the delayed returns queue
             for (int i = 0; i < 10; i++)
@@ -327,7 +329,7 @@ namespace Ledgerscope.RateLimiters.Tests
             // Arrange
             const int permitLimit = 1;
             var returnDelay = TimeSpan.FromMilliseconds(100);
-            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, returnDelay);
+            _rateLimiter = new DelayedReturnRateLimiter(permitLimit, 0, returnDelay, NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act & Assert
             // First acquisition should succeed
