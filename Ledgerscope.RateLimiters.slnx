@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Ledgerscope.RateLimiters.Demo/Ledgerscope.RateLimiters.Demo.csproj" />
+  <Project Path="Ledgerscope.RateLimiters.Tests/Ledgerscope.RateLimiters.Tests.csproj" />
+  <Project Path="Ledgerscope.RateLimiters/Ledgerscope.RateLimiters.csproj" />
+</Solution>
