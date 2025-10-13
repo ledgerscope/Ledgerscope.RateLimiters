@@ -65,7 +65,7 @@ namespace Ledgerscope.RateLimiters.Tests
             _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act & Assert
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => _rateLimiter.AttemptAcquire(permitCount));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _rateLimiter.AttemptAcquire(permitCount));
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace Ledgerscope.RateLimiters.Tests
             _rateLimiter = new DelayedReturnRateLimiter(5, 0, TimeSpan.FromMilliseconds(100), NullLogger<DelayedReturnRateLimiter>.Instance);
 
             // Act & Assert
-            await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(() => _rateLimiter.AcquireAsync(permitCount).AsTask());
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _rateLimiter.AcquireAsync(permitCount).AsTask());
         }
 
         [TestMethod]
@@ -139,7 +139,7 @@ namespace Ledgerscope.RateLimiters.Tests
             cts.Cancel();
 
             // Assert
-            await Assert.ThrowsExceptionAsync<TaskCanceledException>(() => acquireTask.AsTask());
+            await Assert.ThrowsAsync<TaskCanceledException>(() => acquireTask.AsTask());
         }
 
         [TestMethod]
