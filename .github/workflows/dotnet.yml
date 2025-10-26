@@ -58,7 +58,7 @@ jobs:
       run: dotnet pack -p:PackageVersion=1.0.${{github.run_number}} -p:RepositoryUrl="https://github.com/ledgerscope/Ledgerscope.DelayedReturnRateLimiter" -p:RepositoryType=git
     
     - name: Upload package artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: nuget-packages
         path: "**/*.nupkg"
