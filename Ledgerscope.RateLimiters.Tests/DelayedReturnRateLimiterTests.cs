@@ -18,13 +18,12 @@ namespace Ledgerscope.RateLimiters.Tests
         [TestMethod]
         public void MyTestMethod()
         {
-            var cl = new ConcurrencyLimiter(new ConcurrencyLimiterOptions
+            using var cl = new ConcurrencyLimiter(new ConcurrencyLimiterOptions
             {
                 PermitLimit = 1,
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 QueueLimit = 0 // No queueing, fail immediately if no permits available
             });
-
 
             var result = cl.AttemptAcquire(1);
             Assert.IsTrue(result.IsAcquired);
