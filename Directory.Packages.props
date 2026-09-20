@@ -13,6 +13,6 @@
     <PackageVersion Include="System.Threading.RateLimiting" Version="10.0.12" />
 
     <!-- Testing -->
-    <PackageVersion Include="MSTest" Version="4.4.0" />
+    <PackageVersion Include="MSTest" Version="4.4.1" />
   </ItemGroup>
 </Project>
