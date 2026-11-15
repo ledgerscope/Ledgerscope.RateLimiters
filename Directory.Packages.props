@@ -8,7 +8,7 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.15" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.15" />
     <!-- Rate Limiting -->
-    <PackageVersion Include="System.Threading.RateLimiting" Version="10.0.15" />
+    <PackageVersion Include="System.Threading.RateLimiting" Version="11.0.0" />
     <!-- Testing -->
     <PackageVersion Include="MSTest" Version="4.5.3" />
   </ItemGroup>
